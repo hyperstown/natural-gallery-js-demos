@@ -1,0 +1,24 @@
+{
+  "name": "first-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@lucide/svelte": "^1.25.0",
+    "@skeletonlabs/skeleton": "^5.0.0",
+    "@skeletonlabs/skeleton-svelte": "^5.0.0",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tailwindcss/vite": "^4.3.3",
+    "svelte": "^5.56.4",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.1.1"
+  },
+  "dependencies": {
+    "@ecodev/natural-gallery-js": "hyperstown/natural-gallery-js#master"
+  }
+}
