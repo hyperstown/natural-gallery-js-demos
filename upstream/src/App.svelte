@@ -385,7 +385,7 @@
   }
 
   function goToTop() {
-    naturalGalleryObj?.scrollToTop({ behavior: "smooth" });
+    scrollerRef?.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   async function rebuildGallery() {
