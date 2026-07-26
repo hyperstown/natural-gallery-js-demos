@@ -52,7 +52,9 @@ export function useLightbox(options) {
 
       return {
         id: index,
-        src: model.enlargedSrc,
+        // A source that cannot offer a larger rendition than the thumbnail gets
+        // the thumbnail blown up, which beats an empty lightbox.
+        src: model.enlargedSrc || model.thumbnailSrc,
         width: model.enlargedWidth,
         height: model.enlargedHeight,
         msrc: model.thumbnailSrc,

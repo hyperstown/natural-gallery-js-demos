@@ -13,6 +13,8 @@
   import ImageDetails from "./lib/ImageDetails.svelte";
   import * as NaturalGallery from "@ecodev/natural-gallery-js";
   import { picsum } from "@api/picsum.js";
+  import { commons } from "@api/commons.js";
+  import { cma } from "@api/cma.js";
   import { likes } from "@api/likes.js";
   import { image } from "@store/image.js";
   import "@ecodev/natural-gallery-js/natural-gallery.css";
@@ -35,8 +37,24 @@
   const DEFAULT_BOARD = "picsum";
   const API_LIST = {
     picsum,
+    commons,
+    cma,
     likes,
   };
+
+  /**
+   * The boards that browse a collection. Likes is a board too, but it is
+   * rendered on its own because it carries a count.
+   */
+  const BOARDS = [
+    { name: "picsum", label: "Picsum", title: "picsum.photos, about 1000 photos" },
+    {
+      name: "commons",
+      label: "Commons",
+      title: "Wikimedia Commons quality images, about 450 000 photos",
+    },
+    { name: "cma", label: "Art", title: "Cleveland Museum of Art, about 41 000 CC0 artworks" },
+  ];
 
   /**
    * Markup for one of the symbols in public/icons.svg. Photoswipe builds its
@@ -527,13 +545,16 @@
     {/if}
 
     <div class="fab-group">
-      <button
-        class="fab"
-        class:active={board === "picsum"}
-        onclick={() => switchBoard("picsum")}
-      >
-        Picsum
-      </button>
+      {#each BOARDS as entry (entry.name)}
+        <button
+          class="fab"
+          class:active={board === entry.name}
+          title={entry.title}
+          onclick={() => switchBoard(entry.name)}
+        >
+          {entry.label}
+        </button>
+      {/each}
       <button class="fab" class:active={board === "likes"} onclick={() => switchBoard("likes")}>
         Likes ({likedCount})
       </button>

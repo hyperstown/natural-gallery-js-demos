@@ -15,6 +15,8 @@ import MasonryGallery from '@lib/MasonryGallery.jsx'
 import { GalleryContext } from '@lib/galleryContext.js'
 import { useLightbox } from '@lib/useLightbox.js'
 import { picsum } from '@api/picsum.js'
+import { commons } from '@api/commons.js'
+import { cma } from '@api/cma.js'
 import { likes } from '@api/likes.js'
 import '@assets/gallery.css'
 
@@ -30,8 +32,20 @@ const GALLERY_SIZES = [
 const DEFAULT_BOARD = 'picsum'
 const API_LIST = {
   picsum,
+  commons,
+  cma,
   likes,
 }
+
+/**
+ * The boards that browse a collection. Likes is a board too, but it is rendered
+ * on its own because it carries a count.
+ */
+const BOARDS = [
+  { name: 'picsum', label: 'Picsum', title: 'picsum.photos, about 1000 photos' },
+  { name: 'commons', label: 'Commons', title: 'Wikimedia Commons quality images, about 450 000 photos' },
+  { name: 'cma', label: 'Art', title: 'Cleveland Museum of Art, about 41 000 CC0 artworks' },
+]
 
 const links = [
   { label: 'Old', href: 'https://example.com', icon: ArchiveIcon },
@@ -422,12 +436,16 @@ function App() {
           )}
 
           <div className="fab-group">
-            <button
-              className={board === 'picsum' ? 'fab active' : 'fab'}
-              onClick={() => switchBoard('picsum')}
-            >
-              Picsum
-            </button>
+            {BOARDS.map((entry) => (
+              <button
+                key={entry.name}
+                className={board === entry.name ? 'fab active' : 'fab'}
+                title={entry.title}
+                onClick={() => switchBoard(entry.name)}
+              >
+                {entry.label}
+              </button>
+            ))}
             <button
               className={board === 'likes' ? 'fab active' : 'fab'}
               onClick={() => switchBoard('likes')}

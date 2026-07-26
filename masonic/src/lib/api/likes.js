@@ -14,9 +14,16 @@
  */
 
 import {picsum} from './picsum.js';
+import {commons} from './commons.js';
+import {cma} from './cma.js';
 
-/** Sources able to rebuild a thumbnail url for a model that came from them. */
-const SOURCES = {[picsum.name]: picsum};
+/**
+ * Every source a liked photo can have come from, so the likes board knows who
+ * to ask for a thumbnail url at the current gallery size. A source without
+ * `resizeThumbnail` (commons, cma) is served at whatever size it was stored
+ * with.
+ */
+const SOURCES = {[picsum.name]: picsum, [commons.name]: commons, [cma.name]: cma};
 
 const DB_NAME = 'natural-gallery-demo';
 const DB_VERSION = 1;

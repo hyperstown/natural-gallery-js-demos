@@ -47,7 +47,37 @@ Where it deliberately differs from `upstream/` and `first-demo/`:
   That is what lets the lightbox browse the whole collection while only a window
   of it is in the DOM.
 
-`lib/api/` is a copy of the same folder in the other demos, unchanged.
+`lib/api/` is a copy of the same folder in the other demos.
+
+## Boards
+
+Four data sources, switched from the button group at the bottom right. All of
+them implement the contract documented at the top of `lib/api/picsum.js`, and
+between them they cover every branch of it.
+
+| Board | Source | Images | Pagination | Thumbnails |
+| --- | --- | --- | --- | --- |
+| Picsum | picsum.photos | ~1 000 | page number | any size |
+| Commons | Wikimedia Commons, `Category:Quality images` | ~450 000 | **cursor** (`gcmcontinue` through `lastId`) | fixed per fetch — no `resizeThumbnail` |
+| Art | Cleveland Museum of Art open access | ~41 000, CC0 | offset (`skip`) | fixed — no `resizeThumbnail` |
+| Likes | IndexedDB | what you liked | cursor (primary key) | per originating source |
+
+None of them needs an API key, so nothing has to be kept out of the repository.
+Three details are worth knowing:
+
+- **Commons thumbnail urls cannot be rewritten.** They look guessable —
+  `…/<hash>/<file>/<width>px-<file>` — but upload.wikimedia.org only serves the
+  widths it has already generated and answers any other with a 400 and an html
+  error page, which the browser then rejects as a non-image response. Which
+  widths exist differs per file. Only two urls can be trusted: the one the api
+  hands out, used for the grid, and `Special:FilePath?width=`, which has
+  mediawiki render the size asked for and redirects to it. That redirect is not
+  cached, so it is worth one request per photo opened in the lightbox and not
+  one in front of every thumbnail in the grid.
+- **Commons pages hold 50 items**, because mediawiki resolves `prop=imageinfo`
+  for at most 50 titles per request however many the generator returns.
+- **The museum's records are ~22 kB each** of curatorial metadata, with no way
+  to ask for fewer fields, which is what keeps its page size at 50 as well.
 
 ---
 
