@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @import '@skeletonlabs/skeleton';
-@import '@skeletonlabs/skeleton-svelte';
+@import '@skeletonlabs/skeleton-react';
 @import '@skeletonlabs/skeleton/themes/cerberus';
 
 @theme {
@@ -21,3 +21,4 @@
 body {
   background-image: radial-gradient(at 0% 25%, color-mix(in oklab, var(--color-primary-500) 10%, transparent) 0px, transparent 50%), radial-gradient(at 15% 6%, color-mix(in oklab, var(--color-tertiary-500) 5%, transparent) 0px, transparent 50%);
 }
+
