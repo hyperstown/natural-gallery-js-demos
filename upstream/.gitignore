@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Upstream natural-gallery-js clone, rebuilt by scripts/build-upstream.mjs.
+# vendor/package.json itself is committed, see the note inside it.
+vendor/checkout
+vendor/.built-ref

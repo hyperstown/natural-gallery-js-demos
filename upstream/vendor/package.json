@@ -1,0 +1,12 @@
+{
+    "name": "@ecodev/natural-gallery-js",
+    "description": "Stub that exposes the upstream build in ./checkout/dist as a package. Committed on purpose: pnpm resolves local dependencies before it runs the root preinstall, so this file must exist before ../scripts/build-upstream.mjs has had a chance to run. The root depends on it through `link:`, which symlinks the folder as-is — with `file:` pnpm packs it during resolution, i.e. before checkout/dist exists. The version is static to keep lockfiles stable, the real one is in checkout/dist/package.json.",
+    "version": "0.0.0-upstream",
+    "license": "MIT",
+    "type": "module",
+    "exports": {
+        ".": "./checkout/dist/natural-gallery.js",
+        "./natural-gallery.css": "./checkout/dist/natural-gallery.css"
+    },
+    "typings": "./checkout/dist/natural-gallery.d.ts"
+}

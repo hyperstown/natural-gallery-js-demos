@@ -463,7 +463,7 @@
     { label: "Old", href: "https://example.com", icon: ArchiveIcon },
     { label: "First Version", href: "https://example.com", icon: ImageIcon },
     { label: "Second Version", href: "https://example.com", icon: ImagesIcon },
-    { label: "Upstream", href: "https://example.com", icon: GitBranchIcon },
+    { label: "Upstream", href: "https://example.com", icon: GitBranchIcon, active: true },
   ];
 </script>
 
