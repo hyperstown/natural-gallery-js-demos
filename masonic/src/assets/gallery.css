@@ -1,0 +1,355 @@
+/*
+ * Everything natural-gallery's own stylesheet would give us, plus the demo
+ * chrome shared with the other demos.
+ *
+ * The .figure rules below are a port of `.natural-gallery-js .root` from
+ * dist/natural-gallery.css (8px radius, the image fading in once loaded,
+ * zoom on hover, the label sliding up from the bottom edge), so that a masonic
+ * cell and a natural-gallery figure look the same. Everything from
+ * `.footer-buttons` down is copied from the other demos unchanged.
+ */
+
+.figure {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: var(--ngjs-figure-radius, 8px);
+}
+
+.figure .image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  object-fit: cover;
+  object-position: center;
+  border-radius: inherit;
+  z-index: 100;
+  opacity: 0;
+  cursor: zoom-in;
+  transition: 1s ease-out all;
+}
+
+/* Set once the thumbnail has decoded, which is what fades it in */
+.figure.loaded .image {
+  opacity: 1;
+}
+
+.figure .image:hover,
+.figure .image:focus {
+  transform: rotate(1deg) scale(1.2);
+}
+
+.figure:focus-visible,
+.figure *:focus-visible {
+  outline: var(--ngjs-focus-outline, 1px solid orange);
+}
+
+/* Label. `left: initial` and the max-width keep it clear of the heart in the
+   bottom left corner, and the z-index keeps it under it. */
+.figure .title {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  max-width: 75%;
+  z-index: 140;
+  padding: 8px;
+  overflow: hidden;
+  text-align: center;
+  white-space: normal;
+  color: white;
+  font-size: 14px;
+  line-height: 1.4em;
+  font-weight: normal;
+  transition: 0.2s ease all;
+}
+
+.figure .title a {
+  display: block;
+  padding: 8px;
+  border: none;
+  border-radius: var(--ngjs-link-radius, 4px);
+  background: var(--ngjs-link-bg, rgba(0, 0, 0, 0.7));
+  color: var(--ngjs-link-color, white);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.25),
+    0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.figure .title a:hover {
+  background: var(--ngjs-link-hover-bg, rgb(0, 0, 0));
+  color: var(--ngjs-link-hover-color, white);
+}
+
+/* Hidden until the figure is hovered or something inside it is focused */
+.figure .title.hover {
+  transform: translateY(calc(100% + 12px));
+}
+
+.figure:hover .title.hover,
+.figure:focus-within .title.hover {
+  transform: translateY(0);
+}
+
+@media (hover: none) {
+  .figure .title.hover {
+    transform: none;
+    display: none;
+  }
+
+  .figure .image:hover,
+  .figure .image:focus {
+    transform: none !important;
+  }
+
+  .figure:hover .title.hover,
+  .figure:focus-within .title.hover {
+    transform: none;
+  }
+}
+
+.footer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  z-index: 160;
+  /* Make sure it does not overlap */
+  position: fixed;
+  /* Clears the mobile navigation bar */
+  bottom: 90px;
+  right: 20px;
+  left: 20px;
+  min-height: 20px;
+  pointer-events: none;
+}
+
+.footer-buttons > * {
+  pointer-events: auto;
+}
+
+@media (min-width: 48rem) {
+  .footer-buttons {
+    bottom: 20px;
+    left: auto;
+  }
+}
+
+/* Segmented control, e.g. the thumbnail size */
+.fab-group {
+  display: flex;
+  gap: 2px;
+}
+
+.fab {
+  border: none;
+  outline: none;
+  background-color: #3a3939a1;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px;
+  animation: fadeIn 1s;
+  backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+button.fab:hover {
+  background-color: #3a3939e0;
+}
+
+/* Selected entry of a .fab-group */
+.fab.active {
+  background-color: color-mix(in oklab, var(--color-primary-500) 65%, transparent);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Icons
+   One symbol per icon in public/icons.svg, drawn with `icon(name)` in
+   lib/icons.js. Only inherited properties reach a sprite symbol, so the stroke
+   lives here and `fill` is what tells the two heart states apart. */
+.icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.liked .icon {
+  fill: currentColor;
+}
+
+/* Like button */
+
+.heart-like-button,
+.heart-like-icon,
+.details-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heart-like-button {
+  position: absolute;
+  z-index: 150;
+  bottom: 0;
+  margin: 5px !important;
+  min-width: 30px;
+  min-height: 30px;
+  background-color: white;
+  color: inherit;
+  border: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 100px;
+  cursor: pointer;
+  outline: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+  .heart-like-button {
+    background-color: #232627;
+  }
+}
+
+/* Lightbox buttons: photoswipe's colour variable keeps them in step with the
+   close and zoom buttons next to them */
+.heart-like-icon,
+.details-toggle {
+  color: var(--pswp-icon-color, #fff);
+}
+
+.details-toggle .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* A heart reads smaller than a square of the same size, so it gets a couple of
+   extra pixels to sit level with the details icon next to it */
+.heart-like-icon .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.heart-like-button:hover,
+.heart-like-icon:hover {
+  color: #d65076;
+}
+
+.heart-like-button.liked,
+.heart-like-icon.liked {
+  color: #d65076;
+}
+
+.heart-like-button.liked {
+  animation: liked 0.4s ease;
+}
+
+/* Keeps the heart readable on top of a bright photo, the way photoswipe's own
+   icons get an outline */
+.icon-shadow {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+@keyframes liked {
+  0% {
+    transform: scale(0.8);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Details panel, the styles ImageDetails.svelte keeps scoped in the other
+   demos */
+.details-overlay {
+  position: fixed;
+  bottom: 12px;
+  right: 24px;
+  /* Above photoswipe, which sits at 100000 */
+  z-index: 300000;
+  max-width: min(500px, calc(100vw - 48px));
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #0000007d;
+  backdrop-filter: blur(10px);
+  color: white;
+  font-size: 14px;
+  transition:
+    transform 0.25s ease-out,
+    opacity 0.25s ease-out;
+}
+
+.details-overlay.hidden-overlay {
+  /* Slide out to the right rather than unmount, so it can slide back in */
+  transform: translateX(calc(100% + 24px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.details-overlay .details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.details-overlay .details p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.details-overlay hr {
+  margin: 8px 0;
+  border-color: #ffffff40;
+}
+
+.details-overlay .tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.details-overlay .tags-list p {
+  padding: 2px 8px;
+  border-radius: 100px;
+  background-color: #ffffff1f;
+  white-space: nowrap;
+}
+
+.details-overlay .kind {
+  opacity: 0.6;
+}
