@@ -7,6 +7,8 @@
   import ImagesIcon from "@lucide/svelte/icons/images";
   import GitBranchIcon from "@lucide/svelte/icons/git-branch";
   import ArrowUpIcon from "@lucide/svelte/icons/arrow-up";
+  import ChevronUpIcon from "@lucide/svelte/icons/chevron-up";
+  import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
   import RefreshCwIcon from "@lucide/svelte/icons/refresh-cw";
   import LoaderCircleIcon from "@lucide/svelte/icons/loader-circle";
   import DisclaimerDialog from "./lib/DisclaimerDialog.svelte";
@@ -92,6 +94,8 @@
   let exhausted = $state(false);
   let error = $state(null);
   let scrolled = $state(false);
+  /** Small screens only: whether the folded away controls are showing. */
+  let toolbarOpen = $state(false);
   /**
    * Model shown in the lightbox, and therefore in the details panel. Raw state:
    * the gallery owns these objects and we compare them by identity, which a
@@ -558,8 +562,11 @@
 </div>
 
 {#if !$image}
-  <div class="footer-buttons">
-    <span class="fab" aria-live="polite">
+  <div class="footer-buttons" class:expanded={toolbarOpen}>
+    <!-- Everything marked collapsible folds away on a small screen, leaving the
+         three buttons at the end of this list. An error stays put: it is the
+         one thing that must not hide behind the toggle. -->
+    <span class="fab" class:collapsible={!error} aria-live="polite">
       {#if loading}
         <LoaderCircleIcon class="size-4 animate-spin" />
       {/if}
@@ -570,7 +577,7 @@
       <button class="fab" onclick={() => addImages()}>Retry</button>
     {/if}
 
-    <div class="fab-group">
+    <div class="fab-group collapsible">
       {#each BOARDS as entry (entry.name)}
         <button
           class="fab"
@@ -586,7 +593,7 @@
       </button>
     </div>
 
-    <div class="fab-group">
+    <div class="fab-group collapsible">
       {#each GALLERY_TYPES as galleryType (galleryType)}
         <button
           class="fab"
@@ -598,7 +605,7 @@
       {/each}
     </div>
 
-    <div class="fab-group">
+    <div class="fab-group collapsible">
       {#each GALLERY_SIZES as preset (preset.size)}
         <button
           class="fab"
@@ -610,6 +617,20 @@
         </button>
       {/each}
     </div>
+
+    <button
+      class="fab toolbar-toggle"
+      onclick={() => (toolbarOpen = !toolbarOpen)}
+      title={toolbarOpen ? "Hide the controls" : "Show the controls"}
+      aria-label={toolbarOpen ? "Hide the controls" : "Show the controls"}
+      aria-expanded={toolbarOpen}
+    >
+      {#if toolbarOpen}
+        <ChevronDownIcon class="size-4" />
+      {:else}
+        <ChevronUpIcon class="size-4" />
+      {/if}
+    </button>
 
     <button class="fab" onclick={reload} title="Load the first page again" aria-label="Reload">
       <RefreshCwIcon class="size-4" />

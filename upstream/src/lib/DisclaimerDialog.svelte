@@ -40,13 +40,13 @@
           <div
             {...attributes}
             hidden={false}
-            class="bg-surface-50-950/50 fixed inset-0 z-50"
+            class="bg-surface-50-950/50 fixed inset-0 z-[400000]"
             transition:fade={{ duration: 200 }}
           ></div>
         {/if}
       {/snippet}
     </Dialog.Backdrop>
-    <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <Dialog.Positioner class="fixed inset-0 z-[400000] flex items-center justify-center p-4">
       <Dialog.Content>
         {#snippet element(attributes)}
           {#if open}

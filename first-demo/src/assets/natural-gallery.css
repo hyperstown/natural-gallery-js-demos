@@ -55,10 +55,29 @@
   pointer-events: auto;
 }
 
+/* A phone has room for three buttons, not eight: everything marked collapsible
+   folds away until the toggle is pressed. Wide screens show the lot and have no
+   use for the toggle. */
+@media (max-width: 47.999rem) {
+  .footer-buttons>.collapsible {
+    display: none;
+  }
+
+  .footer-buttons.expanded>.collapsible {
+    display: flex;
+  }
+}
+
 @media (min-width: 48rem) {
   .footer-buttons {
     bottom: 20px;
     left: auto;
+  }
+
+  /* Child selector on purpose: .fab sets display further down this file, and a
+     plain .toolbar-toggle would lose to it on source order */
+  .footer-buttons>.toolbar-toggle {
+    display: none;
   }
 }
 
