@@ -27,6 +27,12 @@
 
   const GALLERY_TYPES = ["Natural", "Masonry", "Square"];
 
+  /**
+   * How close the rendered window may come to the end of the collection before
+   * another page is fetched, in items.
+   */
+  const LOAD_MORE_BUFFER = 40;
+
   /** Wanted thumbnail size, in pixels. */
   const GALLERY_SIZES = [
     { label: "S", size: 250 },
@@ -101,8 +107,6 @@
 
   /** Every model fetched so far, kept so the gallery can be rebuilt for free. */
   let models = [];
-  /** A pagination request that came in while a fetch was already running. */
-  let pendingRequest = false;
   let abortController = null;
   /** Bumped whenever the collection is reset, to discard in-flight fetches. */
   let generation = 0;
@@ -198,6 +202,38 @@
     return button;
   }
 
+  /**
+   * True once the rendered window comes within LOAD_MORE_BUFFER items of the
+   * end of the collection.
+   *
+   * The gallery keeps items it has not rendered yet, and with virtual scroll
+   * `domCollection` is the window on screen rather than everything shown so
+   * far, so the last item in it says how far the user has walked into the
+   * collection. Its 'pagination' event is no use for this: it fires every time
+   * the gallery tops up the DOM, which is far more often than we want a page.
+   */
+  function needsMoreImages() {
+    if (!naturalGalleryObj) return false;
+
+    const collection = naturalGalleryObj.collection;
+    const lastVisible = naturalGalleryObj.domCollection.at(-1);
+    if (!collection.length || !lastVisible) return false;
+
+    for (let i = Math.max(0, collection.length - LOAD_MORE_BUFFER); i < collection.length; i++) {
+      if (collection[i] === lastVisible) return true;
+    }
+
+    return false;
+  }
+
+  /** Fetch another page, but only once the buffer is nearly walked through. */
+  function maybeLoadMore() {
+    if (loading || exhausted || error) return;
+    if (!needsMoreImages()) return;
+
+    addImages();
+  }
+
   function initNaturalGallery() {
     naturalGalleryObj = new NaturalGallery[type](
       naturalGalleryRef,
@@ -225,25 +261,17 @@
       if (!item.rootElement.querySelector(".heart-like-button")) {
         item.rootElement.appendChild(createHeart(item.model));
       }
+
+      // The window that is being rendered right now is only assigned to
+      // domCollection once this render pass is over, so check after it.
+      queueMicrotask(maybeLoadMore);
     });
 
-    // Hand back what we already downloaded, before listening to pagination, so
-    // that a rebuild reuses the pages we have in memory.
+    // Hand back what we already downloaded, so that a rebuild reuses the pages
+    // we have in memory instead of fetching them again.
     if (models.length) {
       instance.setItems(models);
     }
-
-    // The gallery offers every offset exactly once: it asks for items when it
-    // thinks its buffer runs low and never asks for the same offset twice. So
-    // every event has to end up in a fetch (see pendingRequest), and a failed
-    // fetch has to be retried by hand instead of waiting for the next scroll.
-    // The flip side is that a rebuild costs one extra page, since the fresh
-    // gallery counts its buffer from zero.
-    instance.addEventListener("pagination", () => {
-      // A replaced gallery still holds scroll listeners: ignore what it asks.
-      if (instance !== naturalGalleryObj) return;
-      addImages();
-    });
   }
 
   function bindLightbox(instance) {
@@ -324,11 +352,7 @@
   }
 
   async function addImages(replaceAll = false) {
-    if (loading) {
-      pendingRequest = true;
-      return;
-    }
-
+    if (loading) return;
     if (exhausted && !replaceAll) return;
 
     const token = generation;
@@ -374,11 +398,6 @@
         abortController = null;
       }
     }
-
-    if (token === generation && pendingRequest) {
-      pendingRequest = false;
-      addImages();
-    }
   }
 
   /** Start over from the first page. */
@@ -387,7 +406,6 @@
     abortController?.abort();
     abortController = null;
     loading = false;
-    pendingRequest = false;
     page = 1;
     lastId = null;
     exhausted = false;
@@ -403,7 +421,8 @@
   }
 
   function goToTop() {
-    naturalGalleryObj?.scrollToTop({ behavior: "smooth" });
+    // 11.1.3 has no scrollToTop(), so the scroller is moved directly
+    scrollerRef?.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   async function rebuildGallery() {
@@ -450,6 +469,10 @@
 
   function onScroll() {
     scrolled = (scrollerRef?.scrollTop ?? 0) > 400;
+
+    // Covers scrolling back down over items the gallery has rendered before,
+    // which raises no 'item-added-to-dom'.
+    maybeLoadMore();
   }
 
   onMount(() => {
@@ -460,6 +483,9 @@
     }
 
     initNaturalGallery();
+    // Nothing asks for the first page: from here on, loading follows the
+    // rendered window (see maybeLoadMore).
+    addImages();
 
     likes
       .count()
