@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
-    /** Keep in sync with resolve.alias in vite.config.js */
-    "baseUrl": ".",
+    /**
+     * Keep in sync with resolve.alias in vite.config.js. Relative to this file:
+     * `paths` needs no `baseUrl` since TypeScript 4.1, and `baseUrl` itself is
+     * deprecated as of 6.0.
+     */
     "paths": {
-      "@assets/*": ["src/assets/*"],
-      "@api/*": ["src/lib/api/*"],
-      "@store/*": ["src/lib/store/*"],
-      "@lib/*": ["src/lib/*"],
-      "@/*": ["src/*"]
+      "@assets/*": ["./src/assets/*"],
+      "@api/*": ["./src/lib/api/*"],
+      "@store/*": ["./src/lib/store/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@/*": ["./src/*"]
     },
     "moduleResolution": "bundler",
     "target": "ESNext",
