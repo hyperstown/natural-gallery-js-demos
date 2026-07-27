@@ -196,8 +196,9 @@ button.fab:hover {
   background-color: #3a3939e0;
 }
 
-/* Selected entry of a .fab-group */
+/* Selected entry of a .fab-group. */
 .fab.active {
+  background-color: rgba(7, 112, 239, 0.65);
   background-color: color-mix(in oklab, var(--color-primary-500) 65%, transparent);
 }
 
@@ -258,6 +259,9 @@ button.fab:hover {
 @media (prefers-color-scheme: dark) {
   .heart-like-button {
     background-color: #232627;
+  }
+  .heart-like-button .icon {
+    color: white;
   }
 }
 
