@@ -1,0 +1,215 @@
+@media(hover: none) {
+  .natural-gallery-js .figure .title.hover {
+    transform: none;
+    display: none;
+  }
+
+  .natural-gallery-js .figure.zoomable:hover .image,
+  .natural-gallery-js .figure .image.zoomable:hover {
+    transform: none !important;
+  }
+
+  .natural-gallery-js .figure:hover .title.hover,
+  .natural-gallery-js .figure:hover .title.hover,
+  .natural-gallery-js .figure:hover .selectBtn {
+    transform: none;
+  }
+
+  .natural-gallery-js .figure.selected .selectBtn {
+    transform: none;
+  }
+}
+
+.natural-gallery-js .figure .title {
+  z-index: 140 !important;
+}
+
+.natural-gallery-js a.figure {
+  color: inherit;
+}
+
+.natural-gallery-js .figure .title {
+  left: initial !important;
+  max-width: 75%;
+}
+
+
+.footer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  z-index: 160;
+  /* Make sure it does not overlap */
+  position: fixed;
+  /* Clears the mobile navigation bar */
+  bottom: 90px;
+  right: 20px;
+  left: 20px;
+  min-height: 20px;
+  pointer-events: none;
+}
+
+.footer-buttons>* {
+  pointer-events: auto;
+}
+
+@media (min-width: 48rem) {
+  .footer-buttons {
+    bottom: 20px;
+    left: auto;
+  }
+}
+
+/* Segmented control, e.g. the layout or the thumbnail size */
+.fab-group {
+  display: flex;
+  gap: 2px;
+}
+
+
+.fab {
+  /*display: none;  Hidden by default */
+  border: none;
+  outline: none;
+  /* Remove outline */
+  background-color: #3a3939a1;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px;
+  /* Rounded corners */
+  /* font-size: 18px; Increase font size */
+  animation: fadeIn 1s;
+  backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+button.fab:hover {
+  background-color: #3a3939e0;
+}
+
+/* Selected entry of a .fab-group */
+.fab.active {
+  background-color: color-mix(in oklab, var(--color-primary-500) 65%, transparent);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Icons
+   One symbol per icon in public/icons.svg, drawn with `icon(name)` in
+   App.svelte. Only inherited properties reach a sprite symbol, so the stroke
+   lives here and `fill` is what tells the two heart states apart. */
+.icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.liked .icon {
+  fill: currentColor;
+}
+
+/* Like button */
+
+.heart-like-button,
+.heart-like-icon,
+.details-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heart-like-button {
+  position: absolute;
+  z-index: 150;
+  bottom: 0;
+  margin: 5px !important;
+  min-width: 30px;
+  min-height: 30px;
+  background-color: white;
+  color: inherit;
+  border: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+  border-radius: 100px;
+  cursor: pointer;
+  outline: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+  .heart-like-button {
+    background-color: #232627;
+  }
+}
+
+/* Lightbox buttons: photoswipe's colour variable keeps them in step with the
+   close and zoom buttons next to them */
+.heart-like-icon,
+.details-toggle {
+  color: var(--pswp-icon-color, #fff);
+}
+
+.details-toggle .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* A heart reads smaller than a square of the same size, so it gets a couple of
+   extra pixels to sit level with the details icon next to it */
+.heart-like-icon .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.heart-like-button:hover,
+.heart-like-icon:hover {
+  color: #d65076;
+}
+
+.heart-like-button.liked,
+.heart-like-icon.liked {
+  color: #d65076;
+}
+
+.heart-like-button.liked {
+  animation: liked .4s ease;
+}
+
+/* Keeps the heart readable on top of a bright photo, the way photoswipe's own
+   icons get an outline */
+.icon-shadow {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .6));
+}
+
+@keyframes liked {
+  0% {
+    transform: scale(.8);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

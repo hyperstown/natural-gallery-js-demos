@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    /**
+     * Keep in sync with resolve.alias in vite.config.js. Relative to this file:
+     * `paths` needs no `baseUrl` since TypeScript 4.1, and `baseUrl` itself is
+     * deprecated as of 6.0.
+     */
+    "paths": {
+      "@assets/*": ["./src/assets/*"],
+      "@api/*": ["./src/lib/api/*"],
+      "@store/*": ["./src/lib/store/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@/*": ["./src/*"]
+    },
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "module": "ESNext",
+    /**
+     * svelte-preprocess cannot figure out whether you have
+     * a value or a type, so tell TypeScript to enforce using
+     * `import type` instead of `import` for Types.
+     */
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    /**
+     * To have warnings / errors of the Svelte compiler at the
+     * correct position, enable source maps by default.
+     */
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+    "checkJs": false
+  },
+  /**
+   * Use global.d.ts instead of compilerOptions.types
+   * to avoid limiting type declarations.
+   */
+  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.svelte"]
+}
