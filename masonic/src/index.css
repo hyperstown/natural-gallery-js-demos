@@ -4,6 +4,9 @@
 @import '@skeletonlabs/skeleton-react';
 @import '@skeletonlabs/skeleton/themes/cerberus';
 
+/* Last, so its rules sit outside tailwind's layers and can override them */
+@import './assets/fallbacks.css';
+
 @theme {
   --animate-dialog-bounce: dialog-bounce 0.25s ease-in-out;
 

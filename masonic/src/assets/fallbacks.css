@@ -1,0 +1,43 @@
+/*
+ * What older browsers get instead of the modern colour syntax.
+ *
+ * Most of it is handled at build time: `css.lightningcss.targets` in
+ * vite.config.js makes Lightning CSS rewrite the whole bundle, ours plus
+ * tailwind's plus skeleton's, for the browsers named there. That turns every
+ * `oklch()` into sRGB, lowers `light-dark()`, and adds the `-webkit-` prefixes
+ * for `backdrop-filter` and `mask`.
+ *
+ * `color-mix()` is the one it cannot do: the arguments are custom properties,
+ * whose values are unknown until the page runs, so there is nothing to compute
+ * at build time. A browser without it drops those declarations, which is
+ * invisible in most of skeleton's stylesheet (components this demo never
+ * renders) but shows up in the four places below. The values here are plain
+ * approximations rather than exact theme colours, which is the point: they only
+ * ever run where the themed version could not.
+ *
+ * A browser that supports color-mix() skips this file entirely.
+ */
+
+@supports not (background-color: color-mix(in oklab, red 50%, transparent)) {
+  /* Dimming behind the disclaimer dialog. Without this the page shows through
+     undimmed, which reads as a broken overlay. */
+  .bg-surface-50-950\/50 {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  /* Hover feedback in the navigation rail and bar */
+  :is([data-scope='navigation'][data-part='trigger'],
+    [data-scope='navigation'][data-part='trigger-anchor']):hover {
+    background-color: rgba(128, 128, 128, 0.16);
+  }
+
+  /* Selected text, otherwise the browser default */
+  ::selection {
+    background-color: #0770ef;
+    color: #fff;
+  }
+
+  :root {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.3);
+  }
+}
