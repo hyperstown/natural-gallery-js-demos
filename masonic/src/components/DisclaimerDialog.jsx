@@ -45,11 +45,11 @@ export default function DisclaimerDialog() {
     >
       <Portal>
         <Dialog.Backdrop
-          className={`bg-surface-50-950/50 fixed inset-0 z-50 transition duration-200 starting:opacity-0 ${
+          className={`bg-surface-50-950/50 fixed inset-0 z-[400000] transition duration-200 starting:opacity-0 ${
             closing ? 'opacity-0' : 'opacity-100'
           }`}
         />
-        <Dialog.Positioner className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <Dialog.Positioner className="fixed inset-0 z-[400000] flex items-center justify-center p-4">
           <Dialog.Content
             className={`card bg-surface-100-900 w-full max-w-md space-y-4 p-6 shadow-xl transition duration-200 ease-out starting:scale-90 starting:opacity-0 ${
               closing ? 'scale-90 opacity-0' : 'scale-100 opacity-100'

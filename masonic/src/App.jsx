@@ -3,6 +3,8 @@ import { Navigation } from '@skeletonlabs/skeleton-react'
 import {
   ArchiveIcon,
   ArrowUpIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   GitBranchIcon,
   ImageIcon,
   ImagesIcon,
@@ -93,6 +95,8 @@ function App() {
   const [exhausted, setExhausted] = useState(false)
   const [likedCount, setLikedCount] = useState(0)
   const [scrolled, setScrolled] = useState(false)
+  /** Small screens only: whether the folded away controls are showing. */
+  const [toolbarOpen, setToolbarOpen] = useState(false)
   const [board, setBoard] = useState(DEFAULT_BOARD)
   const [size, setSize] = useState(DEFAULT_SIZE)
   /** Bumped to make the grid throw the layout it has measured away. */
@@ -423,8 +427,11 @@ function App() {
       </div>
 
       {!imageOpen && (
-        <div className="footer-buttons">
-          <span className="fab" aria-live="polite">
+        <div className={toolbarOpen ? 'footer-buttons expanded' : 'footer-buttons'}>
+          {/* Everything marked collapsible folds away on a small screen, leaving
+              the three buttons at the end of this list. An error stays put: it is
+              the one thing that must not hide behind the toggle. */}
+          <span className={error ? 'fab' : 'fab collapsible'} aria-live="polite">
             {loading && <LoaderCircleIcon className="size-4 animate-spin" />}
             {status}
           </span>
@@ -435,7 +442,7 @@ function App() {
             </button>
           )}
 
-          <div className="fab-group">
+          <div className="fab-group collapsible">
             {BOARDS.map((entry) => (
               <button
                 key={entry.name}
@@ -454,7 +461,7 @@ function App() {
             </button>
           </div>
 
-          <div className="fab-group">
+          <div className="fab-group collapsible">
             {GALLERY_SIZES.map((preset) => (
               <button
                 key={preset.size}
@@ -466,6 +473,20 @@ function App() {
               </button>
             ))}
           </div>
+
+          <button
+            className="fab toolbar-toggle"
+            onClick={() => setToolbarOpen((open) => !open)}
+            title={toolbarOpen ? 'Hide the controls' : 'Show the controls'}
+            aria-label={toolbarOpen ? 'Hide the controls' : 'Show the controls'}
+            aria-expanded={toolbarOpen}
+          >
+            {toolbarOpen ? (
+              <ChevronDownIcon className="size-4" />
+            ) : (
+              <ChevronUpIcon className="size-4" />
+            )}
+          </button>
 
           <button
             className="fab"

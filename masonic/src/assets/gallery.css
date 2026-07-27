@@ -11,6 +11,10 @@
 
 .figure {
   position: relative;
+  /* The image and the heart below carry z-indexes of their own (100 and 150).
+     Without a stacking context here those compete with the page chrome, and a
+     photo scrolling past the fixed navigation bar (z-50) paints over it. */
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -137,10 +141,29 @@
   pointer-events: auto;
 }
 
+/* A phone has room for three buttons, not seven: everything marked collapsible
+   folds away until the toggle is pressed. Wide screens show the lot and have no
+   use for the toggle. */
+@media (max-width: 47.999rem) {
+  .footer-buttons > .collapsible {
+    display: none;
+  }
+
+  .footer-buttons.expanded > .collapsible {
+    display: flex;
+  }
+}
+
 @media (min-width: 48rem) {
   .footer-buttons {
     bottom: 20px;
     left: auto;
+  }
+
+  /* Child selector on purpose: .fab sets display further down this file, and a
+     plain .toolbar-toggle would lose to it on source order */
+  .footer-buttons > .toolbar-toggle {
+    display: none;
   }
 }
 
