@@ -250,3 +250,9 @@ button.fab:hover {
   border-radius: 50%;
   background-color: currentColor;
 }
+
+/* The scroll container is focusable (tabindex="-1") so Home/End and the page
+   keys reach it, but it is not a control: no focus ring. */
+#gallery-container:focus {
+  outline: none;
+}

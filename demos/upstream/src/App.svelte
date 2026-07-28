@@ -470,6 +470,19 @@
     rebuildGallery();
   }
 
+  /**
+   * Home/End/PageUp/PageDown scroll whatever the focused element sits inside,
+   * and the page itself does not scroll here — the gallery is its own scroll
+   * container. So it has to hold focus for those keys to do anything: it takes
+   * focus on mount when nothing else wants it, and again on a click that did
+   * not land on a control. tabindex="-1" keeps it out of the tab order.
+   */
+  function focusScroller(event) {
+    if (event?.target?.closest?.("a, button, input, select, textarea, [tabindex]")) return;
+
+    scrollerRef?.focus({ preventScroll: true });
+  }
+
   function onScroll() {
     scrolled = (scrollerRef?.scrollTop ?? 0) > 400;
 
@@ -489,6 +502,11 @@
     // Nothing asks for the first page: from here on, loading follows the
     // rendered window (see maybeLoadMore).
     addImages();
+
+    // Only when nothing else has it, so the disclaimer keeps its focus trap
+    if (document.activeElement === document.body) {
+      scrollerRef?.focus({ preventScroll: true });
+    }
 
     likes
       .count()
@@ -548,6 +566,8 @@
   <main
     bind:this={scrollerRef}
     id="gallery-container"
+    tabindex="-1"
+    onpointerdown={focusScroller}
     style="overflow:auto; min-height:100%; height:100%;"
   >
     {#key galleryKey}
