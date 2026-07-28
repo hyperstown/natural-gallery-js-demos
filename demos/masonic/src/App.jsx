@@ -60,7 +60,7 @@ const site = `${import.meta.env.BASE_URL}../`
 const links = [
   { label: 'Old', demo: 'old', href: `${site}old/`, icon: ArchiveIcon },
   { label: 'First Version', demo: 'first-demo', href: `${site}first-demo/`, icon: ImageIcon },
-  { label: 'Second Version', demo: 'masonic', href: `${site}masonic/`, icon: ImagesIcon },
+  { label: 'Masonic', demo: 'masonic', href: `${site}masonic/`, icon: ImagesIcon },
   { label: 'Upstream', demo: 'upstream', href: `${site}upstream/`, icon: GitBranchIcon },
 ]
 
