@@ -1,0 +1,3 @@
+# Built by scripts/build-all.mjs from the per-demo dist folders
+dist/
+node_modules/

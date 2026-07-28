@@ -1,0 +1,9 @@
+{
+  "name": "natural-gallery-js-demos",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-all.mjs",
+    "preview": "node scripts/serve-dist.mjs"
+  }
+}

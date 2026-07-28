@@ -425,8 +425,7 @@
   }
 
   function goToTop() {
-    // 11.1.3 has no scrollToTop(), so the scroller is moved directly
-    scrollerRef?.scrollTo({ top: 0, behavior: "smooth" });
+    naturalGalleryObj?.scrollToTop({ behavior: "smooth" });
   }
 
   async function rebuildGallery() {
@@ -507,11 +506,19 @@
     };
   });
 
+  /**
+   * Which demo this build is, and where the others live. The hrefs hang off
+   * BASE_URL so they keep working under a subpath: /first-demo/../old/ resolves
+   * to /old/, and /repo/first-demo/../old/ to /repo/old/.
+   */
+  const DEMO = "first-demo";
+  const site = `${import.meta.env.BASE_URL}../`;
+
   const links = [
-    { label: "Old", href: "https://example.com", icon: ArchiveIcon },
-    { label: "First Version", href: "https://example.com", icon: ImageIcon },
-    { label: "Second Version", href: "https://example.com", icon: ImagesIcon },
-    { label: "Upstream", href: "https://example.com", icon: GitBranchIcon },
+    { label: "Old", demo: "old", href: `${site}old/`, icon: ArchiveIcon },
+    { label: "First Version", demo: "first-demo", href: `${site}first-demo/`, icon: ImageIcon },
+    { label: "Second Version", demo: "masonic", href: `${site}masonic/`, icon: ImagesIcon },
+    { label: "Upstream", demo: "upstream", href: `${site}upstream/`, icon: GitBranchIcon },
   ];
 </script>
 
@@ -525,7 +532,10 @@
         <Navigation.Menu>
           {#each links as link (link.label)}
             {@const Icon = link.icon}
-            <Navigation.TriggerAnchor href={link.href}>
+            <Navigation.TriggerAnchor
+              href={link.href}
+              aria-current={link.demo === DEMO ? "page" : undefined}
+            >
               <Icon class="size-8" />
               <Navigation.TriggerText>{link.label}</Navigation.TriggerText>
             </Navigation.TriggerAnchor>
@@ -551,7 +561,10 @@
       <Navigation.Menu class="grid grid-cols-4 gap-2">
         {#each links as link (link.label)}
           {@const Icon = link.icon}
-          <Navigation.TriggerAnchor href={link.href}>
+          <Navigation.TriggerAnchor
+            href={link.href}
+            aria-current={link.demo === DEMO ? "page" : undefined}
+          >
             <Icon class="size-5" />
             <Navigation.TriggerText>{link.label}</Navigation.TriggerText>
           </Navigation.TriggerAnchor>

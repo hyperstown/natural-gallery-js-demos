@@ -380,3 +380,20 @@ button.fab:hover {
 .details-overlay .kind {
   opacity: 0.6;
 }
+
+/* Navigation: the demo you are looking at.
+   Skeleton has no selected state for its navigation, so aria-current carries
+   the meaning and this paints it: the entry takes the theme colour and gets a
+   dot under the label. */
+[data-scope='navigation'][data-part='trigger-anchor'][aria-current='page'] {
+  color: var(--color-primary-500);
+  background-color: rgba(7, 112, 239, 0.12);
+}
+
+[data-scope='navigation'][data-part='trigger-anchor'][aria-current='page']::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: currentColor;
+}

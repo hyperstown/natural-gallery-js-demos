@@ -49,11 +49,19 @@ const BOARDS = [
   { name: 'cma', label: 'Art', title: 'Cleveland Museum of Art, about 41 000 CC0 artworks' },
 ]
 
+/**
+ * Which demo this build is, and where the others live. The hrefs hang off
+ * BASE_URL so they keep working under a subpath: /masonic/../old/ resolves to
+ * /old/, and /repo/masonic/../old/ to /repo/old/.
+ */
+const DEMO = 'masonic'
+const site = `${import.meta.env.BASE_URL}../`
+
 const links = [
-  { label: 'Old', href: 'https://example.com', icon: ArchiveIcon },
-  { label: 'First Version', href: 'https://example.com', icon: ImageIcon },
-  { label: 'Second Version', href: 'https://example.com', icon: ImagesIcon },
-  { label: 'Upstream', href: 'https://example.com', icon: GitBranchIcon },
+  { label: 'Old', demo: 'old', href: `${site}old/`, icon: ArchiveIcon },
+  { label: 'First Version', demo: 'first-demo', href: `${site}first-demo/`, icon: ImageIcon },
+  { label: 'Second Version', demo: 'masonic', href: `${site}masonic/`, icon: ImagesIcon },
+  { label: 'Upstream', demo: 'upstream', href: `${site}upstream/`, icon: GitBranchIcon },
 ]
 
 function App() {
@@ -378,7 +386,11 @@ function App() {
                 {links.map((link) => {
                   const Icon = link.icon
                   return (
-                    <Navigation.TriggerAnchor key={link.label} href={link.href}>
+                    <Navigation.TriggerAnchor
+                      key={link.label}
+                      href={link.href}
+                      aria-current={link.demo === DEMO ? 'page' : undefined}
+                    >
                       <Icon className="size-8" />
                       <Navigation.TriggerText>{link.label}</Navigation.TriggerText>
                     </Navigation.TriggerAnchor>
@@ -415,7 +427,11 @@ function App() {
               {links.map((link) => {
                 const Icon = link.icon
                 return (
-                  <Navigation.TriggerAnchor key={link.label} href={link.href}>
+                  <Navigation.TriggerAnchor
+                    key={link.label}
+                    href={link.href}
+                    aria-current={link.demo === DEMO ? 'page' : undefined}
+                  >
                     <Icon className="size-5" />
                     <Navigation.TriggerText>{link.label}</Navigation.TriggerText>
                   </Navigation.TriggerAnchor>
