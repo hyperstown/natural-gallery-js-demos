@@ -6,6 +6,8 @@
  *   pnpm preview --port 5000        another port (a bare number works too)
  *   pnpm preview --host             every interface, for a phone on the same wifi
  *   pnpm preview --host 192.168.1.5 one interface
+ *   pnpm preview --mount /gallery/demos
+ *                                   serve it under a subpath, like the real host does
  *
  * Same flags as vite, including the default: nothing is exposed to the network
  * until --host says so.
@@ -32,6 +34,8 @@ function flag(name) {
 
 const host = flag('host') === true ? '0.0.0.0' : (flag('host') ?? 'localhost');
 const port = Number(flag('port') ?? args.find(arg => /^\d+$/.test(arg)) ?? 4173);
+/** Prefix the site is served under, e.g. /gallery/demos. Empty means the root. */
+const mount = flag('mount') === true ? '' : String(flag('mount') ?? '').replace(/\/$/, '');
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -47,7 +51,23 @@ const TYPES = {
 
 createServer(async (request, response) => {
   const url = new URL(request.url, 'http://localhost');
-  let path = join(dist, normalize(decodeURIComponent(url.pathname)));
+  let pathname = decodeURIComponent(url.pathname);
+
+  if (mount) {
+    if (pathname === mount) {
+      response.writeHead(302, {location: mount + '/'}).end();
+      return;
+    }
+
+    if (!pathname.startsWith(mount + '/')) {
+      response.writeHead(404).end('Not found (the site is under ' + mount + '/)');
+      return;
+    }
+
+    pathname = pathname.slice(mount.length);
+  }
+
+  let path = join(dist, normalize(pathname));
 
   try {
     if ((await stat(path)).isDirectory()) path = join(path, 'index.html');
@@ -67,7 +87,7 @@ createServer(async (request, response) => {
   createReadStream(path).pipe(response);
 }).listen(port, host, () => {
   const local = host === '0.0.0.0' ? 'localhost' : host;
-  console.log(`  Local:    http://${local}:${port}/`);
+  console.log(`  Local:    http://${local}:${port}${mount}/`);
 
   if (host !== '0.0.0.0') {
     // An explicit address is already reachable; only the default needs the hint
@@ -80,7 +100,7 @@ createServer(async (request, response) => {
   for (const addresses of Object.values(networkInterfaces())) {
     for (const address of addresses ?? []) {
       if (address.family === 'IPv4' && !address.internal) {
-        console.log(`  Network:  http://${address.address}:${port}/`);
+        console.log(`  Network:  http://${address.address}:${port}${mount}/`);
       }
     }
   }

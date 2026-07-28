@@ -8,11 +8,16 @@
  *   dist/masonic/     react + masonic, no natural-gallery at all
  *   dist/upstream/    upstream master, built from source in demos/upstream/vendor
  *
- * Each demo is built with `--base=/<name>/` so its assets resolve under its own
- * folder, which is also what the navigation between demos hangs off (BASE_URL).
+ * Each demo is built with a relative base, so the whole thing works wherever it is
+ * mounted — https://host/ or https://host/gallery/demos/ — without rebuilding.
+ * Everything that points at a sibling demo or at an asset hangs off BASE_URL.
  *
  *   node scripts/build-all.mjs             build everything
  *   node scripts/build-all.mjs first-demo  build one, leaving the rest in place
+ *
+ * Set BASE_PATH to bake in absolute urls instead, if a host needs them:
+ *
+ *   BASE_PATH=/gallery/demos/ node scripts/build-all.mjs
  */
 
 import {execFileSync} from 'node:child_process';
@@ -25,6 +30,10 @@ const dist = join(root, 'dist');
 const demosDir = join(root, 'demos');
 
 const DEMOS = ['old', 'first-demo', 'masonic', 'upstream'];
+
+/** Relative by default; BASE_PATH pins the demos to one absolute location. */
+const basePath = process.env.BASE_PATH?.replace(/\/?$/, '/');
+const baseFor = demo => (basePath ? `${basePath}${demo}/` : './');
 
 const wanted = process.argv.slice(2);
 const demos = wanted.length ? DEMOS.filter(demo => wanted.includes(demo)) : DEMOS;
@@ -42,7 +51,7 @@ await mkdir(dist, {recursive: true});
 
 for (const demo of demos) {
   console.log(`\n=== ${demo} ===`);
-  execFileSync('pnpm', ['--dir', join(demosDir, demo), 'build', `--base=/${demo}/`], {
+  execFileSync('pnpm', ['--dir', join(demosDir, demo), 'build', `--base=${baseFor(demo)}`], {
     stdio: 'inherit',
   });
 
