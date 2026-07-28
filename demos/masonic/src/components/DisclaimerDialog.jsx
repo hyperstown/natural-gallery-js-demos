@@ -57,12 +57,31 @@ export default function DisclaimerDialog() {
           >
             <Dialog.Title className="h4">Disclaimer</Dialog.Title>
             <Dialog.Description className="opacity-80">
-              I do not own the photos shown in this demo. All photos are fetched from the API
-              testing tool{' '}
+              I do not own anything shown in this demo. The pictures come from the API testing
+              tool{' '}
               <a className="anchor" href="https://picsum.photos" target="_blank" rel="noreferrer">
                 picsum.photos
               </a>
-              .
+              , from{' '}
+              <a
+                className="anchor"
+                href="https://commons.wikimedia.org"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Wikimedia Commons
+              </a>{' '}
+              and from the open access collection of the{' '}
+              <a
+                className="anchor"
+                href="https://www.clevelandart.org/open-access"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Cleveland Museum of Art
+              </a>
+              . Pick a source with the buttons at the bottom of the screen; every caption links
+              back to where its picture came from.
             </Dialog.Description>
             <label className="flex items-center gap-2">
               <input
