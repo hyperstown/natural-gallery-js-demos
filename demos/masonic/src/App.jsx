@@ -64,6 +64,54 @@ const links = [
   { label: 'Upstream', demo: 'upstream', href: `${site}upstream/`, icon: GitBranchIcon },
 ]
 
+/**
+ * The visible state lives in the query string too, so a view can be linked:
+ * ?board=art&size=S. Board names there follow the buttons ("art"), not the
+ * internal source name ("cma"), and anything unknown falls back to the default
+ * rather than breaking the page.
+ */
+const BOARD_PARAM = {picsum: 'picsum', commons: 'commons', cma: 'art', likes: 'likes'}
+const BOARD_BY_PARAM = Object.fromEntries(
+  Object.entries(BOARD_PARAM).map(([name, param]) => [param, name]),
+)
+
+const params = new URLSearchParams(window.location.search)
+const initialBoard = BOARD_BY_PARAM[params.get('board')?.toLowerCase()] ?? DEFAULT_BOARD
+const initialSize =
+  GALLERY_SIZES.find((preset) => preset.label === params.get('size')?.toUpperCase())?.size ??
+  DEFAULT_SIZE
+
+/**
+ * The current url with the visible state written onto it. Anything else in the
+ * query string is left alone, and so is the hash.
+ */
+function urlWithState(board, size) {
+  const url = new URL(window.location.href)
+  const wanted = {
+    board: board === DEFAULT_BOARD ? null : BOARD_PARAM[board],
+    size: size === DEFAULT_SIZE ? null : GALLERY_SIZES.find((preset) => preset.size === size)?.label,
+  }
+
+  for (const [key, value] of Object.entries(wanted)) {
+    if (value) {
+      url.searchParams.set(key, value)
+    } else {
+      url.searchParams.delete(key)
+    }
+  }
+
+  return url
+}
+
+/**
+ * Write the visible state back to the query string. replaceState, not
+ * pushState: the back button belongs to the lightbox. Defaults are dropped so a
+ * plain view keeps a plain url.
+ */
+function syncUrl(board, size) {
+  window.history.replaceState(window.history.state, '', urlWithState(board, size))
+}
+
 function App() {
   /**
    * Every model fetched so far. The ref is the source of truth, because the
@@ -105,8 +153,8 @@ function App() {
   const [scrolled, setScrolled] = useState(false)
   /** Small screens only: whether the folded away controls are showing. */
   const [toolbarOpen, setToolbarOpen] = useState(false)
-  const [board, setBoard] = useState(DEFAULT_BOARD)
-  const [size, setSize] = useState(DEFAULT_SIZE)
+  const [board, setBoard] = useState(initialBoard)
+  const [size, setSize] = useState(initialSize)
   /** Bumped to make the grid throw the layout it has measured away. */
   const [resetKey, setResetKey] = useState(0)
   /** Index of the photo the lightbox is on, or null while it is closed. */
@@ -115,6 +163,13 @@ function App() {
   const [showDetails, setShowDetails] = useState(false)
 
   // The same values, for the callbacks that cannot wait for a re-render
+  /**
+   * The query string the navigation carries over, so that the demo you switch
+   * to opens on the same board and size. Not the hash: an open image does not
+   * survive the jump.
+   */
+  const navQuery = urlWithState(board, size).search
+
   const boardRef = useRef(board)
   const sizeRef = useRef(size)
   const imageOpenRef = useRef(false)
@@ -302,6 +357,7 @@ function App() {
       if (nextBoard === boardRef.current) return
       boardRef.current = nextBoard
       setBoard(nextBoard)
+      syncUrl(nextBoard, sizeRef.current)
       reload()
     },
     [reload],
@@ -312,6 +368,7 @@ function App() {
       if (nextSize === sizeRef.current) return
       sizeRef.current = nextSize
       setSize(nextSize)
+      syncUrl(boardRef.current, nextSize)
 
       // Ask the source for thumbnails matching the new display size, so that
       // growing the gallery does not simply upscale the ones we already
@@ -388,7 +445,7 @@ function App() {
                   return (
                     <Navigation.TriggerAnchor
                       key={link.label}
-                      href={link.href}
+                      href={link.href + navQuery}
                       aria-current={link.demo === DEMO ? 'page' : undefined}
                     >
                       <Icon className="size-8" />
@@ -429,7 +486,7 @@ function App() {
                 return (
                   <Navigation.TriggerAnchor
                     key={link.label}
-                    href={link.href}
+                    href={link.href + navQuery}
                     aria-current={link.demo === DEMO ? 'page' : undefined}
                   >
                     <Icon className="size-5" />

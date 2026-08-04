@@ -73,6 +73,26 @@
   const icon = name =>
     `<svg class="icon"><use href="${import.meta.env.BASE_URL}icons.svg#${name}-icon"/></svg>`;
 
+  /**
+   * The visible state lives in the query string too, so a view can be linked:
+   * ?board=art&size=S&type=Masonry. Board names there follow the buttons
+   * ("art"), not the internal source name ("cma"), and anything unknown falls
+   * back to the default rather than breaking the page.
+   */
+  const BOARD_PARAM = {picsum: "picsum", commons: "commons", cma: "art", likes: "likes"};
+  const BOARD_BY_PARAM = Object.fromEntries(
+    Object.entries(BOARD_PARAM).map(([name, param]) => [param, name]),
+  );
+
+  const params = new URLSearchParams(window.location.search);
+  const wantedBoard = BOARD_BY_PARAM[params.get("board")?.toLowerCase()];
+  const wantedSize = GALLERY_SIZES.find(
+    preset => preset.label === params.get("size")?.toUpperCase(),
+  );
+  const wantedType = GALLERY_TYPES.find(
+    galleryType => galleryType.toLowerCase() === params.get("type")?.toLowerCase(),
+  );
+
   // refs
   let naturalGalleryRef = $state(null);
   let scrollerRef = $state(null);
@@ -86,9 +106,9 @@
   let lastId = null;
   let loading = $state(false);
   let page = 1;
-  let board = $state(DEFAULT_BOARD);
-  let type = $state(DEFAULT_GALLERY_SETTINGS.type);
-  let size = $state(DEFAULT_GALLERY_SETTINGS.size);
+  let board = $state(wantedBoard ?? DEFAULT_BOARD);
+  let type = $state(wantedType ?? DEFAULT_GALLERY_SETTINGS.type);
+  let size = $state(wantedSize?.size ?? DEFAULT_GALLERY_SETTINGS.size);
   let loadedCount = $state(0);
   let likedCount = $state(0);
   let exhausted = $state(false);
@@ -443,24 +463,69 @@
   }
 
   /**
+   * The current url with the visible state written onto it. Anything else in
+   * the query string is left alone, and so is the hash.
+   */
+  function urlWithState() {
+    const url = new URL(window.location.href);
+    const wanted = {
+      board: board === DEFAULT_BOARD ? null : BOARD_PARAM[board],
+      size:
+        size === DEFAULT_GALLERY_SETTINGS.size
+          ? null
+          : GALLERY_SIZES.find(preset => preset.size === size)?.label,
+      type: type === DEFAULT_GALLERY_SETTINGS.type ? null : type,
+    };
+
+    for (const [key, value] of Object.entries(wanted)) {
+      if (value) {
+        url.searchParams.set(key, value);
+      } else {
+        url.searchParams.delete(key);
+      }
+    }
+
+    return url;
+  }
+
+  /**
+   * Write the visible state back to the query string. replaceState, not
+   * pushState: the back button belongs to the lightbox. Defaults are dropped so
+   * a plain view keeps a plain url.
+   */
+  function syncUrl() {
+    window.history.replaceState(window.history.state, "", urlWithState());
+  }
+
+  /**
+   * The query string the navigation carries over, so that the demo you switch
+   * to opens on the same board, size and layout. Not the hash: an open image
+   * does not survive the jump.
+   */
+  const navQuery = $derived(urlWithState().search);
+
+  /**
    * Boards are just data sources, so switching one is a reload against the
    * other. Likes are read straight from IndexedDB, picsum from the network.
    */
   function switchBoard(nextBoard) {
     if (nextBoard === board) return;
     board = nextBoard;
+    syncUrl();
     reload();
   }
 
   function switchGalleryType(nextType) {
     if (nextType === type) return;
     type = nextType;
+    syncUrl();
     rebuildGallery();
   }
 
   function switchGallerySize(nextSize) {
     if (nextSize === size) return;
     size = nextSize;
+    syncUrl();
 
     // Ask the source for thumbnails matching the new display size, so growing
     // the gallery does not simply upscale the ones we already downloaded.
@@ -552,7 +617,7 @@
           {#each links as link (link.label)}
             {@const Icon = link.icon}
             <Navigation.TriggerAnchor
-              href={link.href}
+              href="{link.href}{navQuery}"
               aria-current={link.demo === DEMO ? "page" : undefined}
             >
               <Icon class="size-8" />
@@ -583,7 +648,7 @@
         {#each links as link (link.label)}
           {@const Icon = link.icon}
           <Navigation.TriggerAnchor
-            href={link.href}
+            href="{link.href}{navQuery}"
             aria-current={link.demo === DEMO ? "page" : undefined}
           >
             <Icon class="size-5" />
